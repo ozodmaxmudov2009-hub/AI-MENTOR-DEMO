@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Mentor Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .floating-robot {
+      animation: float 3s ease-in-out infinite;
+    }
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-blue-50 via-purple-50 to-white min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header with 3D AI robot -->
+    <div class="text-center mb-6">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712057.png" alt="AI Robot" class="mx-auto w-32 floating-robot mb-4" />
+      <h1 class="text-4xl font-bold text-blue-700 mb-2">🤖 AI Mentor Demo 🤖</h1>
+      <p class="text-gray-700 text-lg">AI Mentor sizga o‘rganmoqchi bo‘lgan fan bo‘yicha eng yaxshi videolar va maqolalarni tavsiya qiladi. Fanni tanlang va “Tavsiya Berish” tugmasini bosing.</p>
+    </div>
+
+    <!-- Subject selection -->
+    <div class="bg-white shadow-lg rounded-2xl p-6 mb-6">
+      <label class="block mb-2 font-semibold text-gray-700">O'rganmoqchi bo'lgan faningiz:</label>
+      <select id="subject" class="w-full p-3 border border-gray-300 rounded-xl mb-4 hover:border-blue-500">
+        <option value="">Fan tanlang...</option>
+        <option value="orta_asrlar_tarixi">O'rta asrlar tarixi</option>
+        <option value="matematika_asoslari">Matematika asoslari</option>
+        <option value="fizika_asoslari">Fizika asoslari</option>
+        <option value="kimyo_asoslari">Kimyo asoslari</option>
+        <option value="biologiya">Biologiya</option>
+        <option value="geografiya">Geografiya</option>
+        <option value="algoritmlar">Algoritmlar</option>
+        <option value="programming_html">HTML</option>
+        <option value="programming_js">JavaScript asoslari</option>
+        <option value="adabiyot">Adabiyot</option>
+        <option value="ingliz_tili">Ingliz tili</option>
+        <option value="iqtisodiyot">Iqtisodiyot kirish</option>
+        <option value="psixologiya">Psixologiya</option>
+        <option value="tarix_umumiy">Umumiy tarix</option>
+        <option value="astronomiya">Astronomiya</option>
+        <option value="botanika">Botanika</option>
+        <option value="zoologiya">Zoologiya</option>
+        <option value="mantiq">Mantiq fanlari</option>
+        <option value="falsafa">Falsafa</option>
+        <option value="huquq_asoslari">Huquq asoslari</option>
+      </select>
+      <button onclick="recommend()" class="w-full bg-purple-600 text-white p-3 rounded-xl hover:bg-purple-700 transition-colors">Tavsiya Berish</button>
+    </div>
+
+    <!-- Results -->
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const data = {
+      "orta_asrlar_tarixi": {
+        title: "O'rta asrlar tarixi",
+        videos: ["https://www.youtube.com/watch?v=QJ0Rz6VnGMI"],
+        articles: ["https://en.wikipedia.org/wiki/Medieval_history"]
+      },
+      "matematika_asoslari": {
+        title: "Matematika asoslari",
+        videos: ["https://www.youtube.com/watch?v=K7MF3xH43O8"],
+        articles: ["https://www.khanacademy.org/math"]
+      },
+      "fizika_asoslari": {
+        title: "Fizika asoslari",
+        videos: ["https://www.youtube.com/watch?v=YB7aZy_DmDo"],
+        articles: ["https://www.khanacademy.org/science/physics"]
+      },
+      "kimyo_asoslari": {
+        title: "Kimyo asoslari",
+        videos: ["https://www.youtube.com/watch?v=FS7gjTLtFnc"],
+        articles: ["https://www.khanacademy.org/science/chemistry"]
+      },
+      "biologiya": {
+        title: "Biologiya",
+        videos: ["https://www.youtube.com/watch?v=8T1DJreQ1vM"],
+        articles: ["https://www.khanacademy.org/science/biology"]
+      },
+      "geografiya": {
+        title: "Geografiya",
+        videos: ["https://www.youtube.com/watch?v=ReV9L59cF9E"],
+        articles: ["https://www.nationalgeographic.com"]
+      },
+      "algoritmlar": {
+        title: "Algoritmlar",
+        videos: ["https://www.youtube.com/watch?v=rL8X2mlNHPM"],
+        articles: ["https://en.wikipedia.org/wiki/Algorithm"]
+      },
+      "programming_html": {
+        title: "HTML",
+        videos: ["https://www.youtube.com/watch?v=pQN-pnXPaVg"],
+        articles: ["https://developer.mozilla.org/en-US/docs/Web/HTML"]
+      },
+      "programming_js": {
+        title: "JavaScript asoslari",
+        videos: ["https://www.youtube.com/watch?v=PkZNo7MFNFg"],
+        articles: ["https://developer.mozilla.org/en-US/docs/Web/JavaScript"]
+      },
+      "adabiyot": {
+        title: "Adabiyot",
+        videos: ["https://www.youtube.com/watch?v=Jf1Aqsn6nJY"],
+        articles: ["https://en.wikipedia.org/wiki/Literature"]
+      },
+      "ingliz_tili": {
+        title: "Ingliz tili",
+        videos: ["https://www.youtube.com/watch?v=V2z-Q_iDFY4"],
+        articles: ["https://www.britishcouncil.org/learn-english"]
+      },
+      "iqtisodiyot": {
+        title: "Iqtisodiyot kirish",
+        videos: ["https://www.youtube.com/watch?v=3ez10ADR_gM"],
+        articles: ["https://www.investopedia.com"]
+      },
+      "psixologiya": {
+        title: "Psixologiya",
+        videos: ["https://www.youtube.com/watch?v=vo4pMVb0R6M"],
+        articles: ["https://www.psychologytoday.com"]
+      },
+      "tarix_umumiy": {
+        title: "Umumiy tarix",
+        videos: ["https://www.youtube.com/watch?v=2mY5iDqT2Jk"],
+        articles: ["https://en.wikipedia.org/wiki/History"]
+      },
+      "astronomiya": {
+        title: "Astronomiya",
+        videos: ["https://www.youtube.com/watch?v=oP1rTjM_ky0"],
+        articles: ["https://www.nasa.gov"]
+      },
+      "botanika": {
+        title: "Botanika",
+        videos: ["https://www.youtube.com/watch?v=6FjR2sb-FgM"],
+        articles: ["https://en.wikipedia.org/wiki/Botany"]
+      },
+      "zoologiya": {
+        title: "Zoologiya",
+        videos: ["https://www.youtube.com/watch?v=J3aZExEJ4cw"],
+        articles: ["https://en.wikipedia.org/wiki/Zoology"]
+      },
+      "mantiq": {
+        title: "Mantiq fanlari",
+        videos: ["https://www.youtube.com/watch?v=8AWmZ0FbGk0"],
+        articles: ["https://en.wikipedia.org/wiki/Logic"]
+      },
+      "falsafa": {
+        title: "Falsafa",
+        videos: ["https://www.youtube.com/watch?v=1A_CAkYt3GY"],
+        articles: ["https://en.wikipedia.org/wiki/Philosophy"]
+      },
+      "huquq_asoslari": {
+        title: "Huquq asoslari",
+        videos: ["https://www.youtube.com/watch?v=c2aV0sI_pOA"],
+        articles: ["https://en.wikipedia.org/wiki/Law"]
+      }
+    };
+
+    function recommend() {
+      const subject = document.getElementById('subject').value;
+      const resultsDiv = document.getElementById('results');
+
+      if (!subject || !data[subject]) {
+        resultsDiv.innerHTML = "<p class='text-red-500 font-semibold'>Iltimos, fan tanlang.</p>";
+        return;
+      }
+
+      const item = data[subject];
+      resultsDiv.innerHTML = `
+        <div class='bg-white shadow-md rounded-xl p-5 mb-4 card transition-transform duration-300'>
+          <h2 class='text-2xl font-bold text-purple-700 mb-3'>${item.title}</h2>
+          <h3 class='text-xl font-semibold mt-2 mb-2'>🎥 YouTube videolar:</h3>
+          <ul class='list-disc ml-6 text-blue-600'>
+            ${item.videos.map(v => `<li>📹 <a href='${v}' target='_blank' class='underline hover:text-blue-800'>Buni tomosha qiling</a></li>`).join('')}
+          </ul>
+          <h3 class='text-xl font-semibold mt-3 mb-2'>📄 Maqolalar:</h3>
+          <ul class='list-disc ml-6 text-green-600'>
+            ${item.articles.map(a => `<li>📄 <a href='${a}' target='_blank' class='underline hover:text-green-800'>O'qish</a></li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
